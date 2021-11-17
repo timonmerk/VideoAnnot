@@ -21,7 +21,7 @@ def run_vid(VIDEO_NAME="00016.mts", PLAY_ANNOT=True):
     out = cv2.VideoWriter("ANNOT_" + VIDEO_NAME[:-4] + ".avi", fourcc, 20.0, (int(cap.get(3)), int(cap.get(4))))
     keypoints = pd.DataFrame()
 
-    
+
     frame_num = 0
     keypoints = pd.DataFrame()
 
@@ -31,8 +31,8 @@ def run_vid(VIDEO_NAME="00016.mts", PLAY_ANNOT=True):
         while cap.isOpened():
             success, image = cap.read()
             frame_num += 1
-            if not success:
-                print("ignore empty frame")
+            if not success or not image.any():
+                print("ignore empty frame or black image")
                 break
 
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
@@ -52,13 +52,13 @@ def run_vid(VIDEO_NAME="00016.mts", PLAY_ANNOT=True):
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-           
+
             mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
              # for watching the video
             if PLAY_ANNOT:
                 cv2.imshow('pose', image)
                 # necessary, otherwise it would not be displayed https://stackoverflow.com/questions/21810452/cv2-imshow-command-doesnt-work-properly-in-opencv-python
-                cv2.waitKey(1)  
+                cv2.waitKey(1)
             out.write(image)
 
 
@@ -68,7 +68,7 @@ def run_vid(VIDEO_NAME="00016.mts", PLAY_ANNOT=True):
     keypoints.to_csv("ANNOT_" + VIDEO_NAME[:-4] +".csv")
 
 if __name__ == "__main__":
-    
+
     # check if a video file was passed
 
     #run_vid('00016.MTS', True)
